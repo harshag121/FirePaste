@@ -1,0 +1,7 @@
+C4Context
+    title System Context diagram for FirePaste
+
+    Person(user, "User", "Public user")
+    System(firepaste, "FirePaste", "Ephemeral Pastebin System")
+    
+    Rel(user, firepaste, "Creates and Views Pastes", "HTTPS/JSON")

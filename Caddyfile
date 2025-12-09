@@ -1,0 +1,8 @@
+:80 {
+    reverse_proxy app:8080
+    
+    # Enable basic metrics if needed, or structured logs
+    log {
+        output stdout
+    }
+}

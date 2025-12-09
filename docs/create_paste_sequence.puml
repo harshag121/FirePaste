@@ -1,0 +1,18 @@
+@startuml
+actor User
+participant "API Gateway\n(Caddy)" as Caddy
+participant "FirePaste\n(Go App)" as App
+database "Redis" as DB
+
+User -> Caddy: POST /paste\n{content, ttl}
+Caddy -> App: Proxy Request
+activate App
+App -> App: Generate ID (ShortID)
+App -> DB: SET paste:ID content EX ttl
+activate DB
+DB --> App: OK
+deactivate DB
+App --> Caddy: 201 Created\n{id, url, expires_at}
+deactivate App
+Caddy --> User: JSON Response
+@enduml
