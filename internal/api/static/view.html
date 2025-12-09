@@ -3,22 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FirePaste - View</title>
+    <title>FirePaste - View Paste</title>
     <style>
-        body { font-family: monospace; max-width: 800px; margin: 2rem auto; padding: 0 1rem; background: #222; color: #eee; }
-        pre { background: #333; padding: 1rem; border: 1px solid #555; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; }
-        .meta { color: #888; font-size: 0.9rem; margin-bottom: 1rem; }
-        a { color: #e74c3c; text-decoration: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 16px 16px 0 0;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        h1 {
+            color: #2d3748;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .paste-id {
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: #f7fafc;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            color: #667eea;
+            font-size: 1rem;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .btn-secondary:hover {
+            background: #edf2f7;
+        }
+        
+        .alert {
+            background: #fed7d7;
+            color: #9b2c2c;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .info {
+            background: #bee3f8;
+            color: #2c5282;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+        }
+        
+        .content-wrapper {
+            background: #1a202c;
+            border-radius: 0 0 16px 16px;
+            padding: 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .content-header {
+            background: #2d3748;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4a5568;
+        }
+        
+        .content-label {
+            color: #a0aec0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .copy-btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: #3182ce;
+        }
+        
+        .copy-btn.copied {
+            background: #48bb78;
+        }
+        
+        pre {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            margin: 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            border-radius: 0 0 16px 16px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: white;
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        .footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+            transition: border-color 0.2s;
+        }
+        
+        .footer a:hover {
+            border-color: white;
+        }
+        
+        @media (max-width: 640px) {
+            .title-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .actions {
+                width: 100%;
+            }
+            
+            .btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>🔥 Paste: {{.ID}}</h1>
-    <div class="meta">
-        {{if .Burned}}
-        <strong style="color: #e74c3c;">⚠️ BURNED: This paste has been deleted forever after this viewing.</strong><br/>
-        {{end}}
-        This paste is ephemeral. Copy it now. <a href="/">Create New</a>
+    <div class="container">
+        <div class="header">
+            <div class="title-row">
+                <div class="title">
+                    <span style="font-size: 2rem;">🔥</span>
+                    <h1>Paste:</h1>
+                    <span class="paste-id">{{.ID}}</span>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="copyToClipboard()">
+                        📋 Copy
+                    </button>
+                    <a href="/" class="btn btn-secondary">
+                        ➕ New Paste
+                    </a>
+                </div>
+            </div>
+            
+            {{if .Burned}}
+            <div class="alert">
+                <span style="font-size: 1.5rem;">⚠️</span>
+                <div>
+                    <strong>BURNED!</strong> This paste has been permanently deleted after this viewing. The URL will never work again.
+                </div>
+            </div>
+            {{end}}
+            
+            <div class="info">
+                <span>ℹ️</span>
+                <span>This paste is ephemeral and will be automatically deleted. Copy it now if you need it.</span>
+            </div>
+        </div>
+        
+        <div class="content-wrapper">
+            <div class="content-header">
+                <span class="content-label">📄 Content</span>
+                <button class="copy-btn" onclick="copyToClipboard()" id="copyBtn">
+                    Copy to Clipboard
+                </button>
+            </div>
+            <pre id="content">{{.Content}}</pre>
+        </div>
+        
+        <div class="footer">
+            Made with ❤️ using <a href="https://github.com/harshag121/FirePaste" target="_blank">FirePaste</a>
+        </div>
     </div>
-    <pre>{{.Content}}</pre>
+    
+    <script>
+        function copyToClipboard() {
+            const content = document.getElementById('content').textContent;
+            const btn = document.getElementById('copyBtn');
+            
+            navigator.clipboard.writeText(content).then(() => {
+                btn.textContent = '✓ Copied!';
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.textContent = 'Copy to Clipboard';
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy to clipboard');
+            });
+        }
+    </script>
 </body>
 </html>

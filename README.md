@@ -58,6 +58,31 @@ make bench
 docker run --network host -i grafana/k6 run - < tests/k6/load.js
 ```
 
+## ☁️ Deploy to Cloud
+
+### Azure Container Apps (Recommended)
+```bash
+./scripts/deploy_azure.sh
+```
+
+**Cost:** ~$21/month (includes Redis, Container Apps, Registry)  
+**Setup Time:** ~10 minutes  
+**Features:** Auto-scaling, HTTPS, monitoring
+
+📚 **[Complete Azure Deployment Guide](docs/AZURE_DEPLOYMENT.md)**
+
+### AWS (EC2 + Terraform)
+```bash
+cd deploy
+terraform init
+terraform apply
+```
+
+### Other Options
+- **Fly.io** - $0-5/month for hobby projects
+- **Railway** - Free tier available
+- **DigitalOcean App Platform** - $5/month
+
 ## 📂 Structure
 
 - `/cmd/server`: Main entrypoint.

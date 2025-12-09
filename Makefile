@@ -48,3 +48,12 @@ lint: ## Run Go linter (requires golangci-lint)
 
 record-demo: ## Record asciinema demo
 	./scripts/record_demo.sh
+
+deploy-azure: ## Deploy to Azure Container Apps
+	./scripts/deploy_azure.sh
+
+azure-logs: ## View Azure Container App logs
+	az containerapp logs show --name firepaste-app --resource-group rg-firepaste --follow
+
+azure-destroy: ## Destroy Azure resources
+	cd deploy && terraform destroy -auto-approve

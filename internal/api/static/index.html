@@ -3,38 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FirePaste - Burn After Reading</title>
+    <title>FirePaste - Ephemeral Pastebin</title>
     <style>
-        body { font-family: monospace; max-width: 800px; margin: 2rem auto; padding: 0 1rem; background: #222; color: #eee; }
-        textarea { width: 100%; height: 200px; background: #333; color: #fff; border: 1px solid #555; padding: 1rem; }
-        button { background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; cursor: pointer; font-size: 1.2rem; }
-        button:hover { background: #c0392b; }
-        .options { margin: 1rem 0; }
-        h1 { color: #e74c3c; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 2.5rem;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            animation: flame 2s ease-in-out infinite;
+        }
+        
+        @keyframes flame {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.05) rotate(-5deg); }
+            75% { transform: scale(1.05) rotate(5deg); }
+        }
+        
+        h1 {
+            color: #2d3748;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #718096;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .options {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            padding: 1.5rem;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .option-group label {
+            margin-bottom: 0;
+            font-size: 0.75rem;
+            color: #718096;
+        }
+        
+        select {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            background: white;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group span {
+            color: #2d3748;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e2e8f0;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+        
+        .feature-desc {
+            color: #718096;
+            font-size: 0.75rem;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .options {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>🔥 FirePaste</h1>
-    <p>Ephemeral Pastebin. No Database. No Tracking. Just RAM.</p>
-    
-    <form action="/paste" method="POST">
-        <textarea name="content" placeholder="Paste your secrets here..."></textarea>
-        
-        <div class="options">
-            <label>Auto-delete in: </label>
-            <select name="ttl">
-                <option value="5m">5 Minutes</option>
-                <option value="1h">1 Hour</option>
-                <option value="24h" selected>24 Hours</option>
-            </select>
-            
-            <label style="margin-left: 2rem;">
-                <input type="checkbox" name="burn" />
-                🔥 Burn after reading (delete after first view)
-            </label>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🔥</div>
+            <h1>FirePaste</h1>
+            <p class="subtitle">Ephemeral, Secure, Anonymous Pastebin</p>
         </div>
         
-        <button type="submit">Create Paste</button>
-    </form>
+        <form action="/paste" method="POST">
+            <div class="form-group">
+                <label>Your Content</label>
+                <textarea name="content" placeholder="Paste your text, code, or secrets here..." required autofocus></textarea>
+            </div>
+            
+            <div class="options">
+                <div class="option-group">
+                    <label>⏱️ Auto-Delete After</label>
+                    <select name="ttl">
+                        <option value="5m">5 Minutes</option>
+                        <option value="1h">1 Hour</option>
+                        <option value="24h" selected>24 Hours</option>
+                    </select>
+                </div>
+                
+                <div class="option-group">
+                    <label style="opacity: 0; pointer-events: none;">Spacer</label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" name="burn" id="burn">
+                        <span>🔥 Burn after first read</span>
+                    </label>
+                </div>
+            </div>
+            
+            <button type="submit">🚀 Create Paste</button>
+        </form>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-title">Ephemeral</div>
+                <div class="feature-desc">Auto-deletes after TTL</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔥</div>
+                <div class="feature-title">Burn on Read</div>
+                <div class="feature-desc">One-time view option</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🚫</div>
+                <div class="feature-title">No Tracking</div>
+                <div class="feature-desc">Zero analytics or logs</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Lightning Fast</div>
+                <div class="feature-desc">Pure RAM storage</div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
