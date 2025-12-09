@@ -1,8 +1,8 @@
 package api
 
 import (
+	"context"
 	"embed"
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"math/rand"
@@ -91,16 +91,8 @@ func (h *Handler) HandleCreatePaste(w http.ResponseWriter, r *http.Request) {
 		
 		id := generateID(6)
 		
-		// If burn on read, we might flag it, but for now we rely on explicit delete or TTL.
-		// Implementing burn-on-read by prefixing? Or just metadata.
-		// For simplicity: Store metadata if needed, but for MVP just storing content.
-		// To support 'burn', we can append a suffix to ID? Or just logic on GET.
-		// Let's store pure content. If 'burn' is requested, we handle it on creation side implementation detail? 
-		// Actually, let's stick to TTL for MVP 1.0, Burn feature can be added if time.
-		// Wait, user asked for "burns the URL forever".
-		// Let's assume standard ephemeral behavior.
-		
-		err = h.store.SaveCreate(r.Context(), id, content, ttl)
+		// Save paste with burn flag
+		err = h.store.SavePaste(r.Context(), id, content, ttl, burn)
 		if err != nil {
 			http.Error(w, "Internal Error", http.StatusInternalServerError)
 			return
@@ -118,6 +110,13 @@ func (h *Handler) HandleCreatePaste(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) HandleGetPaste(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	
+	// Check if this paste is set to burn after reading
+	burn, err := h.store.IsBurnPaste(r.Context(), id)
+	if err != nil && err != store.ErrNotFound {
+		http.Error(w, "Internal Error", http.StatusInternalServerError)
+		return
+	}
+	
 	content, err := h.store.GetPaste(r.Context(), id)
 	if err == store.ErrNotFound {
 		http.NotFound(w, r)
@@ -130,12 +129,19 @@ func (h *Handler) HandleGetPaste(w http.ResponseWriter, r *http.Request) {
 	
 	h.pastesViewed.Inc()
 	
-	// Check if this is a "burn on read" paste? 
-	// For now just standard TTL.
+	// If burn-on-read, delete immediately after viewing
+	if burn {
+		// Delete in background to not slow down response
+		go func() {
+			ctx := context.Background()
+			h.store.DeletePaste(ctx, id)
+		}()
+	}
 	
-	h.tmpl.ExecuteTemplate(w, "view.html", map[string]string{
+	h.tmpl.ExecuteTemplate(w, "view.html", map[string]interface{}{
 		"Content": content,
 		"ID": id,
+		"Burned": burn,
 	})
 }
 

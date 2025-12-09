@@ -14,6 +14,9 @@
 <body>
     <h1>🔥 Paste: {{.ID}}</h1>
     <div class="meta">
+        {{if .Burned}}
+        <strong style="color: #e74c3c;">⚠️ BURNED: This paste has been deleted forever after this viewing.</strong><br/>
+        {{end}}
         This paste is ephemeral. Copy it now. <a href="/">Create New</a>
     </div>
     <pre>{{.Content}}</pre>

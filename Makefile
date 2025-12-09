@@ -1,22 +1,50 @@
-.PHONY: up down build psql
+.PHONY: up down build logs bench demo test clean deploy help
 
-up:
+help: ## Show this help message
+	@echo "FirePaste - Available Commands:"
+	@echo "================================"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+
+up: ## Start the stack (app, redis, caddy, prometheus, grafana)
 	docker compose up -d --build
 
-down:
+down: ## Stop the stack
 	docker compose down
 
-build:
+build: ## Build Docker images
 	docker compose build
 
-logs:
+logs: ## Follow application logs
 	docker compose logs -f app
 
-bench:
-	# Requires k6 installed locally or run via docker
+bench: ## Run k6 load test
 	docker run --network host -i grafana/k6 run - < tests/k6/load.js
 
-demo: up
+demo: up ## Start stack and run load test
 	@echo "Waiting for services..."
 	@sleep 5
 	@make bench
+
+test: ## Run Go unit tests
+	go test -v ./...
+
+test-coverage: ## Run tests with coverage report
+	go test -v -coverprofile=coverage.txt ./...
+	go tool cover -html=coverage.txt -o coverage.html
+	@echo "Coverage report: coverage.html"
+
+clean: ## Clean up build artifacts
+	rm -f firepaste coverage.txt coverage.html
+	docker compose down -v
+
+deploy: ## Deploy to AWS (requires terraform)
+	cd deploy && terraform init && terraform apply
+
+format: ## Format Go code
+	go fmt ./...
+
+lint: ## Run Go linter (requires golangci-lint)
+	golangci-lint run
+
+record-demo: ## Record asciinema demo
+	./scripts/record_demo.sh

@@ -1,0 +1,131 @@
+┌─────────────────────────────────────────────────────────────┐
+│              🔥 FirePaste Quick Reference 🔥                 │
+└─────────────────────────────────────────────────────────────┘
+
+🚀 QUICK START
+──────────────────────────────────────────────────────────────
+make up              # Start everything
+make test            # Run tests
+make bench           # Load test
+make demo            # Full demo
+make help            # All commands
+
+🌐 ACCESS POINTS
+──────────────────────────────────────────────────────────────
+http://localhost:80       # Web UI
+http://localhost:3000     # Grafana (admin/admin)
+http://localhost:9090     # Prometheus
+http://localhost:8080/metrics  # App metrics
+
+📂 KEY FILES
+──────────────────────────────────────────────────────────────
+cmd/server/main.go                  # Entry point
+internal/api/handlers.go            # HTTP handlers
+internal/store/redis.go             # Storage layer
+docker-compose.yml                  # Full stack
+Caddyfile                          # Reverse proxy config
+deploy/main.tf                     # AWS infrastructure
+
+📚 DOCUMENTATION
+──────────────────────────────────────────────────────────────
+README.md                          # Main documentation
+IMPLEMENTATION.md                  # Feature summary
+CHANGES.md                        # What was implemented
+CONTRIBUTING.md                   # How to contribute
+docs/adr/                         # Architecture decisions
+docs/CAPACITY.md                  # Capacity planning
+docs/THREATS.md                   # Security analysis
+
+🎯 FEATURES
+──────────────────────────────────────────────────────────────
+✅ TTL-based expiry (5m, 1h, 24h)
+✅ Burn-after-reading (one-time view)
+✅ Rate limiting (100 req/min)
+✅ Prometheus metrics
+✅ Grafana dashboards
+✅ k6 load testing
+✅ Automatic HTTPS (Caddy)
+✅ Redis storage with TTL
+
+🔧 DEVELOPMENT
+──────────────────────────────────────────────────────────────
+go build ./cmd/server             # Build binary
+go test ./...                     # Run tests
+go fmt ./...                      # Format code
+docker compose up -d              # Start services
+docker compose logs -f app        # View logs
+./scripts/record_demo.sh          # Record demo
+
+📊 TECH STACK
+──────────────────────────────────────────────────────────────
+Backend:     Go 1.22 + Chi router
+Storage:     Redis (in-memory + TTL)
+Proxy:       Caddy (auto-HTTPS + rate limiting)
+Metrics:     Prometheus + Grafana
+Testing:     k6 load testing
+Infra:       Docker Compose + Terraform
+CI/CD:       GitHub Actions
+
+🎓 SYSTEM DESIGN ARTIFACTS
+──────────────────────────────────────────────────────────────
+✅ C4 Context diagram (Mermaid)
+✅ Sequence diagram (PlantUML)
+✅ Capacity planning with math
+✅ STRIDE threat model
+✅ 4 Architecture Decision Records
+✅ Infrastructure as Code (Terraform)
+
+💡 USE CASES
+──────────────────────────────────────────────────────────────
+• Portfolio showcase project
+• System design interview prep
+• Resume talking point
+• Blog post material
+• Open source contribution
+• Learning Go + Redis + observability
+
+📝 FOR RECRUITERS
+──────────────────────────────────────────────────────────────
+Repository: github.com/harshag121/FirePaste
+Tech:      Go · Redis · Caddy · Prometheus · Grafana
+Features:  Burn-after-reading, rate limiting, IaC
+Testing:   50+ users, <500ms p95 latency
+Docs:      4 ADRs, threat model, capacity planning
+License:   MIT (100% Free Software)
+
+🔗 USEFUL LINKS
+──────────────────────────────────────────────────────────────
+Go docs:        https://go.dev/doc/
+Redis:          https://redis.io/docs/
+Caddy:          https://caddyserver.com/docs/
+Prometheus:     https://prometheus.io/docs/
+k6:             https://k6.io/docs/
+C4 Model:       https://c4model.com/
+
+⚡ QUICK TESTS
+──────────────────────────────────────────────────────────────
+# Create paste via CLI
+curl -X POST http://localhost/paste \
+  -d "content=Hello FirePaste!" \
+  -d "ttl=5m" \
+  -d "burn=on"
+
+# Check metrics
+curl http://localhost:8080/metrics | grep firepaste
+
+# Load test
+docker run --rm -i grafana/k6 run - < tests/k6/load.js
+
+🎯 NEXT ACTIONS
+──────────────────────────────────────────────────────────────
+☐ Deploy to cloud (Fly.io, Railway)
+☐ Record demo GIF (asciinema)
+☐ Write blog post (outline ready)
+☐ Create Grafana snapshot
+☐ Add to portfolio site
+☐ Share on LinkedIn/Twitter
+
+┌─────────────────────────────────────────────────────────────┐
+│  Run 'make help' for full command list                     │
+│  See IMPLEMENTATION.md for complete feature list           │
+└─────────────────────────────────────────────────────────────┘

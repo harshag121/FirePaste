@@ -1,0 +1,4 @@
+# .gitignore entry for Nix flake
+flake.lock
+result
+result-*

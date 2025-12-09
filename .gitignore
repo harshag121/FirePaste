@@ -1,0 +1,45 @@
+# .gitignore
+
+# Binaries
+firepaste
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go workspace
+go.work
+go.work.sum
+
+# Test coverage
+*.coverage
+coverage.txt
+coverage.html
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Nix
+result
+result-*
+flake.lock
+
+# Demo recordings
+*.cast
+*.gif
+demo/
+
+# Environment
+.env
+.env.local
